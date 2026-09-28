@@ -1,92 +1,54 @@
-# Infrastructure-as-Code & Automated Web Architecture Pipeline
+# Simple AWS Cloud Website Launcher
 
-An enterprise-grade automation stack designed to orchestrate immutable cloud infrastructure on **Amazon Web Services (AWS)** using **Terraform (HCLv2)** and execute stateless server provisioning using **Ansible (YAML)**.
+This project is an automated tool that sets up a secure website on Amazon Web Services (AWS) from scratch with just a few terminal commands. 
 
-This framework enforces a clean separation of concerns by decoupling underlying resource provisioning from the software configuration lifecycle. It deploys a high-performance **Nginx Web Engine** cluster on enterprise-grade **Amazon Linux** nodes.
+Instead of clicking through the AWS console to set up servers, firewalls, and websites manually, this project handles everything automatically using code.
 
----
+## 🚀 What This Project Does
 
-## 🏗️ System Pipeline Architecture
-
-```text
-  [ Local DevOps Control Node ]
-               │
-               ├── 1. Run "terraform apply" ──> [ AWS Cloud API Engines ]
-               │                                      │
-               │                                (Provisions VPC / Security Group / EC2)
-               │                                      │
-               ├── 2. Auto-Generates ────────────────> V
-               │      "hosts.ini" & Key-pairs     [ AWS EC2 Compute Node ]
-               │                                  (OS: Amazon Linux Native)
-               V                                      │
-               └── 3. Run "ansible-playbook" ─────────┼── Core System Updates (YUM Engine)
-                      (Executes Over SSH Tunnel)      ├── Nginx Web Engine Installation
-                                                      └── Stateful Web Content Deployment
-```
-
-### Core Architectural Layers
-
-*   **Infrastructure Provisioning (Terraform):**
-    *   **Provider Runtime:** Explicit cloud api abstraction layer targeting your globally mapped IAM principals.
-    *   **Cryptographic Layer:** Programmatic orchestration of an ephemeral `tls_private_key` generation block generating asymmetric RSA-4096 credentials local-side.
-    *   **Network Security Profiles:** Stateful Security Groups enforcing a highly restrictive ingress perimeter (TCP `22` for secured remote administration; TCP `80` for standard HTTP routing).
-    *   **Compute Fabric:** High-performance Elastic Compute Cloud (EC2) compute nodes configured to boot native **Amazon Linux** kernels.
-*   **Configuration Management (Ansible):**
-    *   **System Hardening:** Automated update arrays checking, catching, and applying latest dependency upgrades via the `yum` core engine.
-    *   **Web Engine Core:** Native provisioning of a scalable, event-driven Nginx deployment wrapper.
-    *   **Asset Management:** Dynamic environment state updates mapping index landing parameters straight to the operational web root (`/usr/share/nginx/html/`).
+1. **Builds the Server:** It automatically talks to AWS and rents a secure computer (EC2 server) and sets up the security firewall.
+2. **Installs the Website:** It logs into that new computer, installs the **Nginx web server software**, and launches a simple welcome webpage.
+3. **Generates Keys:** It securely creates the digital keys needed to access the server and keeps them hidden from the public.
 
 ---
 
-## 🛠️ Control Node Configuration
+## 🛠️ How to Use It
 
-Ensure your local terminal session has the required toolchains active prior to initiating the pipeline sequences.
-
-### 1. Engine Installation
-```bash
-# Ubuntu / Debian Systems
-sudo apt-get update && sudo apt-get install terraform ansible awscli -y
-```
-
-### 2. AWS Profile Authentication
-Bind your programmatic IAM access vectors securely to your native machine environment variables:
+### 1. Setup Your AWS Account
+Make sure you have your AWS account keys configured on your computer:
 ```bash
 aws configure
 ```
-*Provide your specific structural `AWS Access Key ID`, `AWS Secret Access Key`, and confirm your standard target operational availability zone (e.g., `us-west-1`).*
 
----
-
-## 🚀 The Execution Run-Sequence
-
-The setup implements a **decoupled hand-off pipeline architecture**. Terraform provisions the hardware layer and dynamically writes a functional `hosts.ini` layout right into your workspace context for immediate consumption by Ansible.
-
-### Phase 1: Hardware State Provisioning
-Initialize structural plugins, evaluate configuration schemas, and commit the cloud target footprint:
+### 2. Launch the Cloud Server
+Run these commands to build the server hardware in the cloud:
 ```bash
-# Initialize local runtime state and acquire cloud backend providers
 terraform init
-
-# Compute declarative delta matrices safely against live API endpoints
-terraform plan
-
-# Execute the allocation strategy and lock down state definitions
+terraform plan 
 terraform apply -auto-approve
 ```
+*This will automatically create a file called `hosts.ini` and a security key inside your folder.*
 
-### Phase 2: Configuration & Application Setup
-Once the infrastructure state drops valid public IP pointers into the directory, trigger your playbook to baseline the operating system:
+### 3. Install the Website Software
+Run this command to tell the server to install Nginx and go live:
 ```bash
-# Run tasks to update system cores, install Nginx, and launch target landing contexts
 ansible-playbook -i hosts.ini playbook.yml
 ```
 
+Once finished, open your server's Public IP address in any web browser to see your live website!
+
 ---
 
-## ⚠️ Known Production Gotchas & Technical Deflections
+## 🧩 Troubleshooting: Common Mistakes & Fixes
 
-*   **The Asymmetric Publickey Rejection (`Permission denied`):**
-    This infrastructure stack utilizes highly streamlined Amazon Linux configurations. Standard connection sequences leveraging typical `ubuntu` or `root` account profiles will trigger instant OpenSSH public key validation failures. Network connections must route strictly through the designated root principal handler: `ansible_user=ec2-user`.
-*   **Post-Quantum Cryptography Warnings Logs Noise:**
-    Modern operations terminals operating OpenSSH 9.8+ suites will output local warnings due to older transit key structures inside native EC2 engines. Strict automation argument flags (`-o WarnWeakCrypto=no`) are pre-seeded straight into your tracking `hosts.ini` mapping parameters to eliminate log noise and stop continuous integration parser breakages.
+### The "Permission Denied" Username Trap
+When setting up this project, you might run into an error that says: `Permission denied (publickey)`. It looks like a password or security key failure, but it is actually a **username mix-up**.
+
+*   **The Problem:** AWS gives different names to its computers depending on the operating system system they run. If you use an **Amazon Linux** computer but tell your code to log in as **`ubuntu`**, AWS will instantly lock you out and deny permission.
+*   **The Fix:** Change the login username in your `hosts.ini` configuration file from `ubuntu` to **`ec2-user`**. Once the username matches the Amazon Linux operating system, the system connects perfectly.
+
+---
+
+## 🔒 Security Note
+Your private keys (`.pem`) and tracking files are automatically hidden by our security filters. They will never be uploaded to GitHub.
 
