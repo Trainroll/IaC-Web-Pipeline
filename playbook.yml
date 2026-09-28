@@ -1,0 +1,27 @@
+---
+- name: Initial Server Configuration and Setup
+  hosts: aws_web
+  become: yes
+
+  tasks:
+    - name: Ensure system repositories are completely up to date
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install the web engine (Nginx)
+      yum:
+        name: nginx
+        state: present
+
+    - name: Launch a temporary landing page
+      copy:
+        content: "<h1>Welcome to Infrastructure Phase 1!</h1>"
+        dest: /usr/share/nginx/html/index.html
+
+    - name: Fire up the service engine
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
